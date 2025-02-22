@@ -1,0 +1,44 @@
+# Environment variables and secrets
+.env
+*.env
+**/secrets.yaml
+
+# Service data directories that shouldn't be in git
+config/*/data/
+config/*/certs/
+config/*/logs/
+config/*/cache/
+config/*/asp/
+**/.storage/
+**/wireguard/
+
+# Runtime and temporary files
+*.db
+*.db-*
+*.pid
+*.log
+*.log.*
+*.lock
+lockfile
+*-shm
+*-wal
+.HA_VERSION
+ipc-socket
+**/GeoDB/
+**/BT_backup/
+**/nova3/
+
+# Specific configuration files with sensitive data
+config/qbittorrent/config/config/qBittorrent.conf
+config/qbittorrent/config/config/qBittorrent-data.conf
+config/prowlarr/data/
+config/sonarr/data/
+
+# IDE and system files
+.DS_Store
+.idea/
+*.log
+
+# Future services
+config/plex/
+config/radarr/
