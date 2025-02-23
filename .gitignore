@@ -33,7 +33,7 @@ config/qbittorrent/config/config/qBittorrent.conf
 config/qbittorrent/config/config/qBittorrent-data.conf
 config/prowlarr/data/
 config/sonarr/data/
-
+config/radarr/data/
 # IDE and system files
 .DS_Store
 .idea/
@@ -41,4 +41,3 @@ config/sonarr/data/
 
 # Future services
 config/plex/
-config/radarr/

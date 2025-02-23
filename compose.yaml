@@ -10,6 +10,7 @@ services:
       - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
       - IMMICH_DOMAIN=${IMMICH_DOMAIN}
       - HOMEPAGE_DOMAIN=${HOMEPAGE_DOMAIN}
+      - PLEX_DOMAIN=${PLEX_DOMAIN}
     volumes:
       - ./config/caddy/Caddyfile:/etc/caddy/Caddyfile
       - ./config/caddy/certs:/certs
@@ -87,6 +88,8 @@ services:
     ports:
       - 8989:8989
     restart: unless-stopped
+    depends_on:
+      - qbittorrent
 
   radarr:
     image: lscr.io/linuxserver/radarr:latest
@@ -102,6 +105,20 @@ services:
     ports:
       - 7878:7878
     restart: unless-stopped
+    depends_on:
+      - qbittorrent
+
+  byparr:
+    image: ghcr.io/thephaseless/byparr:main
+    container_name: byparr
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - LOG_HTML=${LOG_HTML:-false}
+      - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
+      - TZ=${TZ}
+    ports:
+      - "${PORT:-8191}:8191"
+    restart: unless-stopped
 
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:latest
@@ -115,3 +132,27 @@ services:
     ports:
       - 9696:9696
     restart: unless-stopped
+
+  plex:
+    container_name: plex
+    image: plexinc/pms-docker
+    restart: unless-stopped
+    ports:
+      - 32400:32400/tcp
+      - 8324:8324/tcp
+      - 32469:32469/tcp
+      - 1900:1900/udp
+      - 32410:32410/udp
+      - 32412:32412/udp
+      - 32413:32413/udp
+      - 32414:32414/udp
+    environment:
+      - PLEX_UID=${PUID}
+      - PLEX_GID=${PGID}
+      - TZ=${TZ}
+      - PLEX_CLAIM=${PLEX_CLAIM}
+    hostname: ${PLEX_HOSTNAME}
+    volumes:
+      - ./config/plex/database:/config
+      - ./config/plex/transcode:/transcode
+      - ${MEDIA_ROOT}:/data

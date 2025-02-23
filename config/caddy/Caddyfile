@@ -15,3 +15,12 @@ https://{env.HOMEPAGE_DOMAIN}:443 {
         dns cloudflare {env.CLOUDFLARE_API_TOKEN}
     }
 }
+
+https://{env.PLEX_DOMAIN}:443 {
+    header Strict-Transport-Security max-age=31536000;
+    reverse_proxy localhost:32400
+
+    tls {
+        dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+    }
+}
