@@ -1,26 +1,31 @@
+(proxy) {
+    header Strict-Transport-Security max-age=31536000
+    reverse_proxy localhost:{args.0}
+
+    tls {
+        dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+    }
+}
+
+# Domain to local port mappings
 https://{env.IMMICH_DOMAIN}:443 {
-    header Strict-Transport-Security max-age=31536000;
-    reverse_proxy localhost:2283
-
-    tls {
-        dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-    }
+    import proxy 2283
 }
-
 https://{env.HOMEPAGE_DOMAIN}:443 {
-    header Strict-Transport-Security max-age=31536000;
-    reverse_proxy localhost:3000
-
-    tls {
-        dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-    }
+    import proxy 3000
 }
-
 https://{env.PLEX_DOMAIN}:443 {
-    header Strict-Transport-Security max-age=31536000;
-    reverse_proxy localhost:32400
-
-    tls {
-        dns cloudflare {env.CLOUDFLARE_API_TOKEN}
-    }
+    import proxy 32400
+}
+https://{env.QBITTORRENT_DOMAIN}:443 {
+    import proxy 9091
+}
+https://{env.SONARR_DOMAIN}:443 {
+    import proxy 8989
+}
+https://{env.RADARR_DOMAIN}:443 {
+    import proxy 7878
+}
+https://{env.HOMEASSISTANT_DOMAIN}:443 {
+    import proxy 8123
 }

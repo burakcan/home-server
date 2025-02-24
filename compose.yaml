@@ -1,6 +1,14 @@
 include:
   - immich/compose.yaml
 
+networks:
+  downloads:
+    driver: bridge
+  media:
+    driver: bridge
+  web:
+    driver: bridge
+
 services:
   caddy:
     image: serfriz/caddy-cloudflare-ddns:latest
@@ -11,6 +19,10 @@ services:
       - IMMICH_DOMAIN=${IMMICH_DOMAIN}
       - HOMEPAGE_DOMAIN=${HOMEPAGE_DOMAIN}
       - PLEX_DOMAIN=${PLEX_DOMAIN}
+      - QBITTORRENT_DOMAIN=${QBITTORRENT_DOMAIN}
+      - SONARR_DOMAIN=${SONARR_DOMAIN}
+      - RADARR_DOMAIN=${RADARR_DOMAIN}
+      - HOMEASSISTANT_DOMAIN=${HOMEASSISTANT_DOMAIN}
     volumes:
       - ./config/caddy/Caddyfile:/etc/caddy/Caddyfile
       - ./config/caddy/certs:/certs
@@ -31,6 +43,8 @@ services:
     environment:
       PUID: ${PUID}
       PGID: ${PGID}
+    networks:
+      - web
 
   homeassistant:
     image: "ghcr.io/home-assistant/home-assistant:stable"
@@ -73,6 +87,8 @@ services:
     devices:
       - /dev/net/tun:/dev/net/tun
     restart: unless-stopped
+    networks:
+      - downloads
 
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
@@ -90,6 +106,8 @@ services:
     restart: unless-stopped
     depends_on:
       - qbittorrent
+    networks:
+      - downloads
 
   radarr:
     image: lscr.io/linuxserver/radarr:latest
@@ -107,6 +125,8 @@ services:
     restart: unless-stopped
     depends_on:
       - qbittorrent
+    networks:
+      - downloads
 
   byparr:
     image: ghcr.io/thephaseless/byparr:main
@@ -119,6 +139,8 @@ services:
     ports:
       - "${PORT:-8191}:8191"
     restart: unless-stopped
+    networks:
+      - downloads
 
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:latest
@@ -132,6 +154,8 @@ services:
     ports:
       - 9696:9696
     restart: unless-stopped
+    networks:
+      - downloads
 
   plex:
     container_name: plex
@@ -156,3 +180,5 @@ services:
       - ./config/plex/database:/config
       - ./config/plex/transcode:/transcode
       - ${MEDIA_ROOT}:/data
+    networks:
+      - media
