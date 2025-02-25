@@ -11,6 +11,8 @@ config/*/cache/
 config/*/asp/
 **/.storage/
 **/wireguard/
+**/database/
+**/transcode/
 
 # Runtime and temporary files
 *.db
@@ -34,6 +36,12 @@ config/qbittorrent/config/config/qBittorrent-data.conf
 config/prowlarr/data/
 config/sonarr/data/
 config/radarr/data/
+config/homeassistant/secrets.yaml
+config/caddy/sites/
+
+# Media files (thumbnails, etc)
+**/MediaCover/
+
 # IDE and system files
 .DS_Store
 .idea/
