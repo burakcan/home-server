@@ -9,6 +9,7 @@ config/*/certs/
 config/*/logs/
 config/*/cache/
 config/*/asp/
+config/*/config/
 **/.storage/
 **/wireguard/
 **/database/
