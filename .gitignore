@@ -48,5 +48,6 @@ config/caddy/sites/
 .idea/
 *.log
 
-# Future services
+
 config/plex/
+config/jellyfin/

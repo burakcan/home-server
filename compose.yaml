@@ -23,6 +23,7 @@ services:
       - SONARR_DOMAIN=${SONARR_DOMAIN}
       - RADARR_DOMAIN=${RADARR_DOMAIN}
       - HOMEASSISTANT_DOMAIN=${HOMEASSISTANT_DOMAIN}
+      - JELLYFIN_DOMAIN=${JELLYFIN_DOMAIN}
     volumes:
       - ./config/caddy/Caddyfile:/etc/caddy/Caddyfile
       - ./config/caddy/certs:/certs
@@ -157,28 +158,49 @@ services:
     networks:
       - downloads
 
-  plex:
-    container_name: plex
-    image: plexinc/pms-docker
-    restart: unless-stopped
-    ports:
-      - 32400:32400/tcp
-      - 8324:8324/tcp
-      - 32469:32469/tcp
-      - 1900:1900/udp
-      - 32410:32410/udp
-      - 32412:32412/udp
-      - 32413:32413/udp
-      - 32414:32414/udp
+  # plex:
+  #   container_name: plex
+  #   image: plexinc/pms-docker
+  #   restart: unless-stopped
+  #   ports:
+  #     - 32400:32400/tcp
+  #     - 8324:8324/tcp
+  #     - 32469:32469/tcp
+  #     - 1900:1900/udp
+  #     - 32410:32410/udp
+  #     - 32412:32412/udp
+  #     - 32413:32413/udp
+  #     - 32414:32414/udp
+  #   environment:
+  #     - PLEX_UID=${PUID}
+  #     - PLEX_GID=${PGID}
+  #     - TZ=${TZ}
+  #     - PLEX_CLAIM=${PLEX_CLAIM}
+  #   hostname: ${PLEX_HOSTNAME}
+  #   volumes:
+  #     - ./config/plex/database:/config
+  #     - ./config/plex/transcode:/transcode
+  #     - ${MEDIA_ROOT}:/data
+  #   networks:
+  #     - media
+
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
     environment:
-      - PLEX_UID=${PUID}
-      - PLEX_GID=${PGID}
+      - PUID=${PUID}
+      - PGID=${PGID}
       - TZ=${TZ}
-      - PLEX_CLAIM=${PLEX_CLAIM}
-    hostname: ${PLEX_HOSTNAME}
+      - JELLYFIN_PublishedServerUrl=${JELLYFIN_DOMAIN}
     volumes:
-      - ./config/plex/database:/config
-      - ./config/plex/transcode:/transcode
-      - ${MEDIA_ROOT}:/data
+      - ./config/jellyfin/config:/config
+      - ${TV_DIR}:/data/tvshows
+      - ${MOVIES_DIR}:/data/movies
+    ports:
+      - 8096:8096
+      - 8920:8920
+      - 7359:7359/udp
+      - 1900:1900/udp
+    restart: unless-stopped
     networks:
       - media
