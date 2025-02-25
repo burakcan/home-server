@@ -36,6 +36,11 @@ This repository contains the configuration for various self-hosted services runn
   - URL: http://localhost:32400 or https://${PLEX_DOMAIN}
   - Media Location: `${MEDIA_ROOT}`
 
+- **Jellyfin** - Media Server
+  - Port: 8096
+  - URL: http://localhost:8096 or https://${JELLYFIN_DOMAIN}
+  - Media Location: `${MEDIA_ROOT}`
+
 ### Photo Management
 - **Immich** - Photo Management & Backup
   - Port: 2283
@@ -77,6 +82,7 @@ This repository contains the configuration for various self-hosted services runn
 │   ├── homeassistant/    # Home Assistant configuration
 │   ├── homepage/         # Homepage configuration
 │   ├── plex/             # Plex configuration
+│   ├── jellyfin/         # Jellyfin configuration
 │   ├── prowlarr/         # Prowlarr configuration
 │   ├── qbittorrent/      # qBittorrent configuration
 │   ├── radarr/           # Radarr configuration
@@ -118,4 +124,5 @@ The following locations should be backed up:
 - Port 9696 for Prowlarr
 - Port 32400 for Plex
 - Port 3000 for Homepage
+- Port 8096 for Jellyfin
 - Port 2283 for Immich 
