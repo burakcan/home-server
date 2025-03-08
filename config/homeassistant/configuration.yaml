@@ -11,7 +11,21 @@ script: !include scripts.yaml
 scene: !include scenes.yaml
 
 http:
+  base_url: https://homeassistant.relaymate.com
   use_x_forwarded_for: true
   trusted_proxies:
     - 127.0.0.1
     - ::1
+    - 192.168.8.2
+    - 0.0.0.0
+
+mqtt:
+  - binary_sensor:
+      unique_id: "burak-win-lwt"
+      state_topic: "iotlink/workgroup/burak-win/lwt"
+      name: "Burak's Computer"
+      value_template: "{{ value }}"
+      payload_on: "ON"
+      payload_off: "OFF"
+      device_class: "connectivity"
+      qos: 1

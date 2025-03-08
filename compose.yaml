@@ -6,8 +6,6 @@ networks:
     driver: bridge
   media:
     driver: bridge
-  web:
-    driver: bridge
 
 services:
   caddy:
@@ -16,6 +14,7 @@ services:
     container_name: caddy
     environment:
       - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
+      - BASE_DOMAIN=${BASE_DOMAIN}
       - IMMICH_DOMAIN=${IMMICH_DOMAIN}
       - HOMEPAGE_DOMAIN=${HOMEPAGE_DOMAIN}
       - PLEX_DOMAIN=${PLEX_DOMAIN}
@@ -24,6 +23,7 @@ services:
       - RADARR_DOMAIN=${RADARR_DOMAIN}
       - HOMEASSISTANT_DOMAIN=${HOMEASSISTANT_DOMAIN}
       - JELLYFIN_DOMAIN=${JELLYFIN_DOMAIN}
+      - GLANCES_DOMAIN=${GLANCES_DOMAIN}
     volumes:
       - ./config/caddy/Caddyfile:/etc/caddy/Caddyfile
       - ./config/caddy/certs:/certs
@@ -44,8 +44,6 @@ services:
     environment:
       PUID: ${PUID}
       PGID: ${PGID}
-    networks:
-      - web
 
   homeassistant:
     image: "ghcr.io/home-assistant/home-assistant:stable"
@@ -110,24 +108,24 @@ services:
     networks:
       - downloads
 
-  radarr:
-    image: lscr.io/linuxserver/radarr:latest
-    container_name: radarr
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-    volumes:
-      - ./config/radarr/data:/config
-      - ${MOVIES_DIR}:/movies
-      - ${DOWNLOADS_DIR}:/downloads
-    ports:
-      - 7878:7878
-    restart: unless-stopped
-    depends_on:
-      - qbittorrent
-    networks:
-      - downloads
+  # radarr:
+  #   image: lscr.io/linuxserver/radarr:latest
+  #   container_name: radarr
+  #   environment:
+  #     - PUID=${PUID}
+  #     - PGID=${PGID}
+  #     - TZ=${TZ}
+  #   volumes:
+  #     - ./config/radarr/data:/config
+  #     - ${MOVIES_DIR}:/movies
+  #     - ${DOWNLOADS_DIR}:/downloads
+  #   ports:
+  #     - 7878:7878
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - qbittorrent
+  #   networks:
+  #     - downloads
 
   byparr:
     image: ghcr.io/thephaseless/byparr:main
@@ -158,49 +156,81 @@ services:
     networks:
       - downloads
 
-  # plex:
-  #   container_name: plex
-  #   image: plexinc/pms-docker
-  #   restart: unless-stopped
-  #   ports:
-  #     - 32400:32400/tcp
-  #     - 8324:8324/tcp
-  #     - 32469:32469/tcp
-  #     - 1900:1900/udp
-  #     - 32410:32410/udp
-  #     - 32412:32412/udp
-  #     - 32413:32413/udp
-  #     - 32414:32414/udp
+  plex:
+    container_name: plex
+    image: plexinc/pms-docker
+    restart: unless-stopped
+    ports:
+      - 32400:32400/tcp
+      - 8324:8324/tcp
+      - 32469:32469/tcp
+      - 1900:1900/udp
+      - 32410:32410/udp
+      - 32412:32412/udp
+      - 32413:32413/udp
+      - 32414:32414/udp
+    environment:
+      - PLEX_UID=${PUID}
+      - PLEX_GID=${PGID}
+      - TZ=${TZ}
+      - PLEX_CLAIM=${PLEX_CLAIM}
+    hostname: ${PLEX_HOSTNAME}
+    volumes:
+      - ./config/plex/database:/config
+      - ./config/plex/transcode:/transcode
+      - ${MEDIA_ROOT}:/data
+    networks:
+      - media
+  # jellyfin:
+  #   image: lscr.io/linuxserver/jellyfin:latest
+  #   container_name: jellyfin
   #   environment:
-  #     - PLEX_UID=${PUID}
-  #     - PLEX_GID=${PGID}
+  #     - PUID=${PUID}
+  #     - PGID=${PGID}
   #     - TZ=${TZ}
-  #     - PLEX_CLAIM=${PLEX_CLAIM}
-  #   hostname: ${PLEX_HOSTNAME}
+  #     - JELLYFIN_PublishedServerUrl=${JELLYFIN_DOMAIN}
   #   volumes:
-  #     - ./config/plex/database:/config
-  #     - ./config/plex/transcode:/transcode
-  #     - ${MEDIA_ROOT}:/data
+  #     - ./config/jellyfin/config:/config
+  #     - ${TV_DIR}:/data/tvshows
+  #     - ${MOVIES_DIR}:/data/movies
+  #   ports:
+  #     - 8096:8096
+  #     - 8920:8920
+  #     - 7359:7359/udp
+  #     - 1900:1900/udp
+  #   restart: unless-stopped
   #   networks:
   #     - media
-
-  jellyfin:
-    image: lscr.io/linuxserver/jellyfin:latest
-    container_name: jellyfin
+  # yt-dlp-webui:
+  #   image: marcobaobao/yt-dlp-webui
+  #   container_name: yt-dlp-webui
+  #   ports:
+  #     - 3033:3033
+  #   volumes:
+  #     - ${DOWNLOADS_DIR}:/downloads
+  #   restart: unless-stopped
+  glances:
+    image: nicolargo/glances:latest
+    restart: unless-stopped
+    pid: host
+    ports:
+      - 61208:61208
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /etc/os-release:/etc/os-release:ro
+      - ./config/glances/glances.conf:/etc/glances/glances.conf
+    environment:
+      - "GLANCES_OPT=-w"
+  mosquitto:
+    image: eclipse-mosquitto:2
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
-      - TZ=${TZ}
-      - JELLYFIN_PublishedServerUrl=${JELLYFIN_DOMAIN}
-    volumes:
-      - ./config/jellyfin/config:/config
-      - ${TV_DIR}:/data/tvshows
-      - ${MOVIES_DIR}:/data/movies
     ports:
-      - 8096:8096
-      - 8920:8920
-      - 7359:7359/udp
-      - 1900:1900/udp
-    restart: unless-stopped
-    networks:
-      - media
+      - 1883:1883
+      - 8883:8883
+      - 9001:9001
+    volumes:
+      - ./config/mosquitto/config:/mosquitto/config
+      - ./config/mosquitto/data:/mosquitto/data
+      - ./config/mosquitto/log:/mosquitto/log

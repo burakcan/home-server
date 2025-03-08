@@ -10,6 +10,7 @@ config/*/logs/
 config/*/cache/
 config/*/asp/
 config/*/config/
+config/homeassistant/custom_components/
 **/.storage/
 **/wireguard/
 **/database/

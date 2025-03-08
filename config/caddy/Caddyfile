@@ -1,3 +1,14 @@
+{
+  dynamic_dns {
+    provider cloudflare {env.CLOUDFLARE_API_TOKEN}
+    versions ipv4
+    domains {
+        relaymate.com *
+        burakcan.me @ www
+    }
+  }
+}
+
 (proxy) {
     header Strict-Transport-Security max-age=31536000
     reverse_proxy localhost:{args[0]}
@@ -5,6 +16,14 @@
     tls {
         dns cloudflare {env.CLOUDFLARE_API_TOKEN}
     }
+}
+
+(fuckoff) {
+    @is_external {
+        not remote_ip 127.0.0.1/32 192.168.8.0/24 0.0.0.0/32
+    }
+
+    redir @is_external https://www.youtube.com/watch?v=dQw4w9WgXcQ 302
 }
 
 https://{env.IMMICH_DOMAIN}:443 {
@@ -20,14 +39,17 @@ https://{env.PLEX_DOMAIN}:443 {
 }
 
 https://{env.QBITTORRENT_DOMAIN}:443 {
+    import fuckoff
     import proxy 9091
 }
 
 https://{env.SONARR_DOMAIN}:443 {
+    import fuckoff
     import proxy 8989
 }
 
 https://{env.RADARR_DOMAIN}:443 {
+    import fuckoff
     import proxy 7878
 }
 
@@ -37,4 +59,17 @@ https://{env.HOMEASSISTANT_DOMAIN}:443 {
 
 https://{env.JELLYFIN_DOMAIN}:443 {
     import proxy 8096
+}
+
+https://{env.GLANCES_DOMAIN}:443 {
+    import fuckoff
+    import proxy 61208
+}
+
+https://burakcan.me:443 {
+    import proxy 8081
+}
+
+https://www.burakcan.me:443 {
+    import proxy 8081
 }

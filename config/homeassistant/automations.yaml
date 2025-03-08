@@ -1,1 +1,46 @@
-[]
+- id: '1741386528990'
+  alias: pegboard light when computer on
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.burak_s_computer
+    to: 'on'
+  conditions: []
+  actions:
+  - action: light.turn_on
+    metadata: {}
+    data: {}
+    target:
+      device_id: 5703a0d95aaa2f8f2193458f4311048e
+  mode: single
+- id: '1741386640148'
+  alias: pegboard light off when pc off
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - binary_sensor.burak_s_computer
+    to: 'off'
+  - trigger: state
+    entity_id:
+    - binary_sensor.burak_s_computer
+    from: 'on'
+    to: unavailable
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 30
+  conditions:
+  - condition: device
+    type: is_on
+    device_id: 5703a0d95aaa2f8f2193458f4311048e
+    entity_id: bff96e98949faa8317a11b960be5523f
+    domain: light
+  actions:
+  - action: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      device_id: 5703a0d95aaa2f8f2193458f4311048e
+  mode: single
