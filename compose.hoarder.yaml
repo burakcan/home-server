@@ -1,0 +1,48 @@
+name: hoarder-app
+services:
+  hoarder-app:
+    container_name: hoarder-app
+    image: ghcr.io/hoarder-app/hoarder:${HOARDER_VERSION:-release}
+    restart: unless-stopped
+    volumes:
+      # By default, the data is stored in a docker volume called "data".
+      # If you want to mount a custom directory, change the volume mapping to:
+      # - /path/to/your/directory:/data
+      - ${CONFIG_ROOT}/hoarder/data:/data
+    ports:
+      - 3002:3000
+    environment:
+      MEILI_ADDR: http://hoarder-meilisearch:7700
+      BROWSER_WEB_URL: http://hoarder-chrome:9222
+      OPENAI_API_KEY: ${HOARDER_OPENAI_API_KEY}
+      DISABLE_SIGNUPS: false
+      CRAWLER_FULL_PAGE_ARCHIVE: true
+      CRAWLER_FULL_PAGE_SCREENSHOT: true
+      CRAWLER_VIDEO_DOWNLOAD: true
+      VERSION: ${HOARDER_VERSION}
+      NEXTAUTH_SECRET: ${HOARDER_NEXTAUTH_SECRET}
+      NEXTAUTH_URL: ${HOARDER_NEXTAUTH_URL}
+
+      # You almost never want to change the value of the DATA_DIR variable.
+      # If you want to mount a custom directory, change the volume mapping above instead.
+      DATA_DIR: /data # DON'T CHANGE THIS
+  hoarder-chrome:
+    container_name: hoarder-chrome
+    image: gcr.io/zenika-hub/alpine-chrome:123
+    restart: unless-stopped
+    command:
+      - --no-sandbox
+      - --disable-gpu
+      - --disable-dev-shm-usage
+      - --remote-debugging-address=0.0.0.0
+      - --remote-debugging-port=9222
+      - --hide-scrollbars
+  hoarder-meilisearch:
+    container_name: hoarder-meilisearch
+    image: getmeili/meilisearch:v1.11.1
+    restart: unless-stopped
+    environment:
+      MEILI_NO_ANALYTICS: "true"
+      MEILI_MASTER_KEY: ${HOARDER_MEILI_MASTER_KEY}
+    volumes:
+      - ${CONFIG_ROOT}/hoarder/meilisearch:/meili_data

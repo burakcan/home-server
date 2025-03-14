@@ -11,7 +11,7 @@
 
 (proxy) {
     header Strict-Transport-Security max-age=31536000
-    reverse_proxy localhost:{args[0]}
+    reverse_proxy {args[0]}:{args[1]}
 
     tls {
         dns cloudflare {env.CLOUDFLARE_API_TOKEN}
@@ -27,49 +27,39 @@
 }
 
 https://{env.IMMICH_DOMAIN}:443 {
-    import proxy 2283
-}
-
-https://{env.HOMEPAGE_DOMAIN}:443 {
-    import proxy 3000
+    import proxy localhost 2283
 }
 
 https://{env.PLEX_DOMAIN}:443 {
-    import proxy 32400
+    import proxy localhost 32400
 }
 
 https://{env.QBITTORRENT_DOMAIN}:443 {
     import fuckoff
-    import proxy 9091
+    import proxy localhost 9091
 }
 
 https://{env.SONARR_DOMAIN}:443 {
     import fuckoff
-    import proxy 8989
-}
-
-https://{env.RADARR_DOMAIN}:443 {
-    import fuckoff
-    import proxy 7878
+    import proxy localhost 8989
 }
 
 https://{env.HOMEASSISTANT_DOMAIN}:443 {
-    import proxy 8123
+    import proxy localhost 8123
 }
 
-https://{env.JELLYFIN_DOMAIN}:443 {
-    import proxy 8096
+https://{env.N3P_DOMAIN}:443 {
+    import proxy 192.168.8.123 80
 }
 
-https://{env.GLANCES_DOMAIN}:443 {
-    import fuckoff
-    import proxy 61208
+https://{env.HOARDER_DOMAIN}:443 {
+    import proxy localhost 3002
 }
 
 https://burakcan.me:443 {
-    import proxy 8081
+    import proxy localhost 8081
 }
 
 https://www.burakcan.me:443 {
-    import proxy 8081
+    import proxy localhost 8081
 }

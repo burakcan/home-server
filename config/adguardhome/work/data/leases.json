@@ -1,1 +1,0 @@
-{"version":1,"leases":[{"expires":"0001-01-01T00:00:00Z","ip":"192.168.0.4","hostname":"","mac":"98:e8:fa:31:67:53","static":false},{"expires":"","ip":"192.168.0.2","hostname":"home-server","mac":"94:b6:09:28:f6:22","static":true},{"expires":"2025-02-27T12:13:14Z","ip":"192.168.0.3","hostname":"pixel-8","mac":"5c:33:7b:e8:30:c9","static":false}]}

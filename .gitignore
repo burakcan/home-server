@@ -11,6 +11,7 @@ config/*/cache/
 config/*/asp/
 config/*/config/
 config/homeassistant/custom_components/
+config/homeassistant/.cloud
 **/.storage/
 **/wireguard/
 **/database/
@@ -52,3 +53,7 @@ config/caddy/sites/
 
 config/plex/
 config/jellyfin/
+config/meilisearch/
+config/mosquitto/
+config/hoarder/
+config/prowlarr/
